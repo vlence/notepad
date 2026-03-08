@@ -8,6 +8,8 @@ let errorSpan
 let contentsElem
 /** @type {HTMLLabelElement} */
 let dropZone
+/** @type {HTMLButtonElement} */
+let saveBtn
 
 /** @type {File?} */
 let file
@@ -23,6 +25,9 @@ function main() {
     errorSpan = document.getElementById('error')
     contentsElem = document.getElementById('contents')
     dropZone = document.getElementById('dropzone')
+    saveBtn = document.getElementById('save')
+
+    saveBtn.addEventListener('click', saveFile)
 
     fileInput.addEventListener('change', fileSelected)
     encodingInput.addEventListener('change', encodingChanged)
@@ -35,6 +40,22 @@ function main() {
     dropZone.addEventListener('dragover', overrideBrowserFileDraggingBehaviour)
 
     window.addEventListener('unhandledrejection', handleUnhandledRejection)
+}
+
+function saveFile() {
+    const a = document.createElement('a')
+    const blob = new Blob([contentsElem.textContent], {type: file.type})
+    const url = URL.createObjectURL(blob)
+
+    a.href = url
+    a.download = file.name
+    a.classList.add('hidden')
+
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+
+    URL.revokeObjectURL(url)
 }
 
 /**
@@ -119,6 +140,7 @@ function renderTextContents() {
     setError('')
     displayContents()
     decodeFile()
+    requestAnimationFrame(() => saveBtn.disabled = false)
 }
 
 async function decodeFile() {
