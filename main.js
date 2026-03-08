@@ -14,7 +14,7 @@ let file
 
 const log = console
 
-/** @type {{[label: string]: TextEncoder;}} */
+/** @type {{[label: string]: TextDecoder;}} */
 const textDecoders = {}
 
 function main() {
@@ -31,6 +31,8 @@ function main() {
     window.addEventListener('dragover', overrideBrowserFileDraggingBehaviour)
     window.addEventListener('dragleave', fileDraggedOut)
     window.addEventListener('drop', fileDropped)
+    contentsElem.addEventListener('dragover', overrideBrowserFileDraggingBehaviour)
+    dropZone.addEventListener('dragover', overrideBrowserFileDraggingBehaviour)
 
     window.addEventListener('unhandledrejection', handleUnhandledRejection)
 }
@@ -39,23 +41,15 @@ function main() {
  * @param {DragEvent} ev
  */
 function fileDraggedIn(ev) {
-    const fileItems = [...ev.dataTransfer.items].filter(
-        item => item.kind === 'file'
-    )
-
-    if (fileItems.length == 0) {
-        log.debug('no files dragged in', ev)
-        return
-    }
-
     ev.preventDefault()
     ev.dataTransfer.dropEffect = 'copy'
+}
 
-    const hasTextFiles = fileItems.some(item => item.type.startsWith('text/'))
-
-    if (hasTextFiles) {
-        ev.dataTransfer.dropEffect = 'copy'
-    }
+/**
+ * @param {DragEvent} ev
+ */
+function overrideBrowserFileDraggingBehaviour(ev) {
+    ev.preventDefault()
 
     if (file) {
         displayDropZone()
@@ -65,34 +59,7 @@ function fileDraggedIn(ev) {
 /**
  * @param {DragEvent} ev
  */
-function overrideBrowserFileDraggingBehaviour(ev) {
-    const fileItems = [...ev.dataTransfer.items].filter(
-        item => item.kind === 'file'
-    )
-
-    if (fileItems.length == 0) {
-        log.debug('no files being dragged', ev)
-        return
-    }
-
-    ev.preventDefault()
-}
-
-/**
- * @param {DragEvent} ev
- */
 function fileDraggedOut(ev) {
-    const fileItems = [...ev.dataTransfer.items].filter(
-        item => item.kind === 'file'
-    )
-
-    if (fileItems.length == 0) {
-        log.debug('no files dragged out', ev)
-        return
-    }
-
-    ev.preventDefault()
-
     if (file) {
         displayContents()
     }
@@ -102,18 +69,20 @@ function fileDraggedOut(ev) {
  * @param {DragEvent} ev
  */
 function fileDropped(ev) {
+    ev.preventDefault()
+
     const fileItems = [...ev.dataTransfer.items].filter(
         item => item.kind === 'file'
     )
 
     if (fileItems.length == 0) {
-        log.debug('no files dropped', ev)
         return
     }
 
-    ev.preventDefault()
-
-    log.debug('file dropped', ev)
+    // use only the first text file and ignore the rest
+    log.debug('dropped', fileItems.length, 'text files')
+    file = fileItems[0].getAsFile()
+    renderTextContents()
 }
 
 function handleUnhandledRejection(err) {
@@ -169,8 +138,6 @@ async function decodeFile() {
 
 /**
  * @param {string} label
- *
- * @return {TextDecoder}
  */
 function textDecoder(label) {
     let decoder = textDecoders[label]
