@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Notepad</title>
+        <link rel="stylesheet" href="styles.css">
+        <script src="main.js"></script>
+</head>
+<body>
+        <main>
+                <div id="controls">
+                        <label>
+                                File:
+                                <input id="file" type="file" accept="text/*">
+                        </label>
+                        <label>
+                                Encoding:
+                                <select id="encoding">
+                                        <option selected>utf-8</option>
+                                        <option>ibm866</option>
+                                        <option>latin-2</option>
+                                        <option>latin-3</option>
+                                        <option>latin-4</option>
+                                        <option>cyrillic</option>
+                                        <option>arabic</option>
+                                        <option>greek</option>
+                                        <option>hebrew</option>
+                                        <option>logical</option>
+                                        <option>latin-6</option>
+                                        <option>iso-8859-14</option>
+                                        <option>latin-9</option>
+                                        <option>iso-8859-16</option>
+                                        <option>macintosh</option>
+                                        <option>windows-874</option>
+                                        <option>windows-1250</option>
+                                        <option>windows-1251</option>
+                                        <option>ascii</option>
+                                        <option>windows-1253</option>
+                                        <option>windows-1254</option>
+                                        <option>windows-1255</option>
+                                        <option>windows-1256</option>
+                                        <option>windows-1257</option>
+                                        <option>windows-1258</option>
+                                        <option>x-mac-cyrillic</option>
+                                        <option>gbk</option>
+                                        <option>gb18030</option>
+                                        <option>big5</option>
+                                        <option>euc-jp</option>
+                                        <option>iso-2022-jp</option>
+                                        <option>shift_jis</option>
+                                        <option>euc-kr</option>
+                                        <option>utf-16be</option>
+                                        <option>utf-16le</option>
+                                </select>
+                        </label>
+                        <span id="stats"></span>
+                        <span id="error"></span>
+                </div>
+                <div id="container">
+                        <label id="dropzone" for="file">
+                                Click or drop a file here
+                        </label>
+                        <pre id="contents" class="hidden" contenteditable></pre>
+                </div>
+        </main>
+</body>
+</html>
