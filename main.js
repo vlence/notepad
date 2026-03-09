@@ -80,7 +80,7 @@ function overrideBrowserFileDraggingBehaviour(ev) {
 /**
  * @param {DragEvent} ev
  */
-function fileDraggedOut(ev) {
+function fileDraggedOut() {
     if (file) {
         displayContents()
     }
@@ -150,11 +150,32 @@ async function decodeFile() {
     const reader = stream.getReader()
     contentsElem.textContent = ''
 
-    let next = true
-    while (next) {
-        const {done, value} = await reader.read()
-        contentsElem.textContent += decoder.decode(value)
-        next = done
+
+    const kib = 1024
+    const page = 3 * kib
+    while (true) {
+        let {done, value} = await reader.read()
+
+        if (done) {
+            break
+        }
+
+        do {
+            let slice = value
+
+            if (slice.byteLength > page) {
+                slice = value.subarray(0, page)
+            }
+
+            value = value.subarray(slice.byteLength)
+            const textNode = document.createTextNode(decoder.decode(slice))
+
+            // contentsElem.textContent += decoder.decode(slice)
+            requestAnimationFrame(() => {
+                contentsElem.appendChild(textNode)
+            })
+        }
+        while(value.byteLength > 0)
     }
 }
 
